@@ -7,7 +7,7 @@ Lightweight flash/image embed solution!
 ##### Method
 
 | Argument Name     | Argument Type     | Argument Description  |
-| :---------------: | :---------------: | :-------------------: |
+| ----------------- | ----------------- | --------------------- |
 | n/a               | n/a               | n/a                   |
 
 ```javascript
@@ -29,7 +29,7 @@ if (flashObject.detected()) {
 ##### Method
 
 | Argument Name     | Argument Type     | Argument Description  |
-| :---------------: | :---------------: | :-------------------: |
+| ----------------- | ----------------- | --------------------- |
 | id                | string            | Element ID            |
 | swf               | string            | Flash Source          |
 | atts              | object            | Flash Attributes      |
@@ -56,7 +56,7 @@ if (flashObject.detected()) {
 ##### Method
 
 | Argument Name     | Argument Type     | Argument Description  |
-| :---------------: | :---------------: | :-------------------: |
+| ----------------- | ----------------- | --------------------- |
 | domObj            | object OR string  | Element ID OR Object  |
 | src               | string            | Image Source          |
 | width             | integer           | Image Width           |
@@ -81,7 +81,7 @@ flashObject.image(domObj, 'myImageFile.png', 930, 180, 'http://domain.com');
 ##### Method
 
 | Argument Name     | Argument Type     | Argument Description  |
-| :---------------: | :---------------: | :-------------------: |
+| ----------------- | ----------------- | --------------------- |
 | n/a               | boolean           | Activate Debugging    |
 
 ```javascript
