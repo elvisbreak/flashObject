@@ -1,154 +1,175 @@
 window.flashObject = window.flashObject || (function() {
 
-    var ie = /msie/ig.test(navigator.userAgent);
+    var isIE = /msie|trident|edge/g.test(navigator.userAgent.toLowerCase());
+    var _atts = {},
+        _pars = {},
+        _flvs = {},
+        debug = !1,
 
-    /**
-     * @param {string} innerHTML
-     */
+    isEmpty = function(domObj) {
+        for (var key in domObj) {
+            if (domObj.hasOwnProperty(key)) {
+                return false;
+            }
+        }
+        return true;
+    },
 
-    function resolve(innerHTML) {
+    fixIE = function(arg) {
         var div = document.createElement("div");
-            div.innerHTML = innerHTML.replace(/DIV/g, 'OBJECT');
+            div.innerHTML = arg.toLowerCase().replace(/div/g, 'object');
         return div.firstChild;
-    }
+    },
 
-    /**
-     * @param {object} objectElement
-     * @param {object} objectParams
-     */
-
-    function createParams(objectElement, objectParams) {
-        for (var objectParam in objectParams) {
-            var paramElement = document.createElement("param");
-                paramElement.setAttribute('name', objectParam);
-            if (objectParam !== 'flashvars') {
-                paramElement.setAttribute('value', objectParams[objectParam]);
-            } else {
-                var temporaryString = '';
-                for (var objectParamParam in objectParams[objectParam]) {
-                    temporaryString = (temporaryString !== '' ? temporaryString + "&amp;" : '') + [objectParamParam, objectParams[objectParam][objectParamParam]].join("=");
-                }
-                paramElement.setAttribute('value', temporaryString);
-            }
-            objectElement.appendChild(paramElement);
+    merge = function(obj1, obj2) {
+        for (var key in obj1) {
+            obj2[key] = obj1[key];
         }
-        return objectElement;
-    }
+    },
 
-    /**
-     * @param {object} objectElement
-     * @param {object} objectAttributes
-     */
+    setEvent = function(domObj, type, fn) {
+        if (domObj.addEventListener) {
+            domObj.addEventListener(type, fn, false); 
+        } else if (domObj.attachEvent)  {
+            domObj.attachEvent('on' + type, fn);
+        }
+    },
 
-    function createAttributes(objectElement, objectAttributes) {
-        for (var objectAttribute in objectAttributes) {
-            if (objectElement.tagName === 'EMBED') {
-                if (objectAttribute !== 'codebase' && objectAttribute !== 'classid') {
-                   objectElement.setAttribute((objectAttribute === 'data'? 'src' : objectAttribute), objectAttributes[objectAttribute]);
-                }
-            } else {
-                if (objectAttribute !== 'type' && objectAttribute !== 'pluginspage') {
-                    objectElement.setAttribute(objectAttribute, objectAttributes[objectAttribute]);
+    // Attributes
+    setAttributes = function(domObj, attsObj) {
+        if (attsObj) {
+            for (var attObj in attsObj) {
+                domObj.setAttribute(attObj, attsObj[attObj]);
+            }
+        } else {
+            for (var _att in _atts) {
+                if (domObj.tagName === 'OBJECT') {
+                    !/type|pluginspage|src/i.test(_att) && domObj.setAttribute(_att, _atts[_att]);
+                } else {
+                    !/classid|codebase|data/i.test(_att) && domObj.setAttribute(_att, _atts[_att]);
                 }
             }
         }
-    }
+    },
 
-    /**
-     * @param {object} objectElement
-     * @param {object} flashVariables
-     */
-
-    function createVariables(objectElement, flashVariables) {
-        var temporaryString = '';
-        for (var flashVariable in flashVariables) {
-            temporaryString = (temporaryString !== '' ? temporaryString + "&amp;" : '') + [flashVariable, flashVariables[flashVariable]].join("=");
+    // Params
+    setParams = function(domObj) {
+        for (var _par in _pars) {
+            var par = document.createElement("param");
+                par.setAttribute('name', _par);
+                par.setAttribute('value', _pars[_par]);
+            domObj.appendChild(par);
         }
-        objectElement.setAttribute('flashvars', temporaryString);
-    }
+    },
 
-    return {
+    // Flashvars
+    setFlashvars = function(domObj, forEmbed) {
+        if (!isEmpty(_flvs)) {
+            if (forEmbed) {
+                var str = '';
+                for (var _flv in _flvs) {
+                    str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
+                }
+                domObj.setAttribute('flashvars', str);
+            } else {
+                var par = document.createElement("param"), str = '';
+                    par.setAttribute('name', 'flashvars');
+                for (var _flv in _flvs) {
+                    str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
+                    domObj.appendChild(par);
+                }
+                par.setAttribute('value', str);
+                domObj.appendChild(par);
+            }
+        }
+    },
 
-        /**
-         * Detect Flash Plugin
-         */
-
-        detected: function() {
+    detect = function() {
+        try {
             if (navigator.plugins && navigator.plugins["Shockwave Flash"]) {
-                return true;
+                return !0;
             } else {
-                try {
-                    return new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
-                } catch (e) {
-                    return false;
-                }
+                return new ActiveXObject("ShockwaveFlash.ShockwaveFlash");
             }
-        },
-
-        /**
-         * @param {string} elementId
-         * @param {string} imageSource
-         * @param {integer} imageWidth
-         * @param {integer} imageHeight
-         * @param {string} linkHref
-         * @param {string} linkTarget
-         */
-
-        image: function(elementId, imageSource, imageWidth, imageHeight, linkHref, linkTarget) {
-            var appendElement = document.getElementById(elementId);
-            var linkElement = document.createElement('a');
-            var imageElement = document.createElement('img');
-            createAttributes(linkElement, {href: linkHref, target: linkTarget || '_blank'});
-            createAttributes(imageElement, {src: imageSource, width: imageWidth, height: imageHeight, target: '_blank', border: 0});
-            linkElement.appendChild(imageElement);
-            appendElement.appendChild(linkElement);
-        },
-
-        /**
-         * @param {string} elementId
-         * @param {string} flashSource
-         * @param {integer} flashWidth
-         * @param {integer} flashHeight
-         * @param {string} flashVariables
-         */
-
-        embed: function(elementId, flashSource, flashWidth, flashHeight, flashVariables) {
-
-            var appendElement = document.getElementById(elementId);
-            var objectElement = document.createElement(ie ? 'div' : 'object');
-            var embedElement = document.createElement('embed');
-
-            var flashAttributes = {
-                data: flashSource, 
-                width: flashWidth, 
-                height: flashHeight,
-                type: 'application/x-shockwave-flash',
-                pluginspage: 'http://www.adobe.com/go/getflashplayer',
-                classid: 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000', 
-                codebase: 'http://fpdownload.macromedia.com/get/shockwave/cabs/flash/swflash.cab#version=7,0,0,0'
-            };
-
-            var flashParameters = {
-                movie: flashSource, 
-                wmode: 'opaque', 
-                allowscriptaccess: 'always', 
-                flashvars: flashVariables
-            };
-
-            createAttributes(objectElement, flashAttributes);
-            createAttributes(embedElement, flashAttributes);
-            createParams(objectElement, flashParameters);
-
-            if (ie) {
-                objectElement = resolve(objectElement.outerHTML);
-            } else {
-                createVariables(embedElement, flashVariables);
-                objectElement.appendChild(embedElement);
-            }
-
-            appendElement.appendChild(objectElement);
-
+        } catch (e) {
+            return !1;
         }
+    },
+
+    image = function(domObj, src, width, height, click) {
+        domObj = 'object' === typeof domObj ? domObj : document.getElementById(domObj);
+        var link = document.createElement('a'),
+            img = document.createElement('img');
+        setAttributes(link, {href: click, target: '_blank', style: 'display:block;font-size:0'});
+        setAttributes(img, {src: src, width: width, height: height, border: 0});
+        link.appendChild(img);
+        domObj.appendChild(link);
+    },
+    
+    embed = function(id, swf, atts, pars, flvs, polite) {
+
+        try {
+
+            var el = document.getElementById(id),
+                obj = document.createElement(isIE ? 'div' : 'object'),
+                emb = document.createElement('embed');
+            
+            // Attributes
+            atts = atts || {};
+            atts.data = swf;
+            atts.src = swf;
+            atts.type = 'application/x-shockwave-flash';
+            atts.pluginspage = 'http://www.adobe.com/go/getflashplayer';
+            atts.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
+            atts.codebase = 'http://fpdownload.macromedia.com/get/shockwave/cabs/flash/swflash.cab#version=7,0,0,0';
+
+            // Params
+            pars = pars || {};
+            pars.movie = swf;
+            pars.wmode = 'opaque';
+            pars.allowscriptaccess = 'always';
+
+            // Flashvars
+            flvs = flvs || {};
+
+            // Merge Objects
+            merge(atts, _atts);
+            merge(pars, _pars);
+            merge(flvs, _flvs);
+
+            setAttributes(obj, !1);
+            setParams(obj);
+            setFlashvars(obj, !1);
+
+            if (isIE) {
+                obj = fixIE(obj.outerHTML);
+            } else {
+                setFlashvars(emb, !0);
+                setAttributes(emb, !1);
+                obj.appendChild(emb);
+            }
+            
+            if (polite) {
+                image(el, polite, atts.width, atts.height, flvs.clickTAG || '');
+                setEvent(window, 'load', function() {
+                    el.innerHTML = '';
+                    el.appendChild(obj);
+                });
+            } else {
+                el.appendChild(obj);
+            }
+
+        } catch (e) {
+            debug && console.log(e);
+        }
+    };
+
+    // Exports
+    return {
+        debug: debug,
+        detect: detect,
+        image: image,
+        embed: embed
     }
 
 })();
