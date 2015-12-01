@@ -4,12 +4,11 @@ Lightweight flash/image embed solution!
 
 ## Flash Plugin Detection
 
-##### Method
-
 | Argument Name     | Argument Type     | Argument Description  |
 | ----------------- | ----------------- | --------------------- |
 | n/a               | n/a               | n/a                   |
 
+##### Method
 ```javascript
 flashObject.detected();
 ```
@@ -26,8 +25,6 @@ if (flashObject.detected()) {
 
 ## Flash Embedding
 
-##### Method
-
 | Argument Name     | Argument Type     | Argument Description  |
 | ----------------- | ----------------- | --------------------- |
 | id                | string            | Element ID            |
@@ -37,6 +34,7 @@ if (flashObject.detected()) {
 | flvs              | object            | Flash Variables       |
 | polite            | string            | Polite Image Source   |
 
+##### Method
 ```javascript
 flashObject.embed(id, swf, atts, pars, flvs, polite);
 ```
@@ -53,8 +51,6 @@ if (flashObject.detected()) {
 
 ## Image Embedding
 
-##### Method
-
 | Argument Name     | Argument Type     | Argument Description  |
 | ----------------- | ----------------- | --------------------- |
 | domObj            | object OR string  | Element ID OR Object  |
@@ -63,6 +59,7 @@ if (flashObject.detected()) {
 | height            | integer           | Image Height          |
 | click             | string            | Link Source           |
 
+##### Method
 ```javascript
 flashObject.image(domObj, src, width, height, click));
 ```
@@ -78,24 +75,21 @@ flashObject.image(domObj, 'myImageFile.png', 930, 180, 'http://domain.com');
 
 ## Flash Plugin Debugging
 
-##### Method
-
 | Argument Name     | Argument Type     | Argument Description  |
 | ----------------- | ----------------- | --------------------- |
 | n/a               | boolean           | Activate Debugging    |
 
+##### Method
 ```javascript
 flashObject.debug;
 ```
 
 ##### Example
-
 ```javascript
 flashObject.debug = !0;
 ```
 
 ## Complete Example
-
 ```javascript
 flashObject.debug = !0;
 if (flashObject.detected()) {
@@ -106,11 +100,9 @@ if (flashObject.detected()) {
 ```
 
 ## Requirements
-
 No known dependencies known so far. Found one? Let me know!
 
 ## License
-
 Copyright (c) 2015 Fredrik Borggren
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
