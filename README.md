@@ -30,21 +30,22 @@ if (flashObject.detected()) {
 
 | Argument Name     | Argument Type     | Argument Description  |
 | :---------------: | :---------------: | :-------------------: |
-| elementId         | string            | Appending Element ID  |
-| flashSource       | string            | Flash Source URL      |
-| flashWidth        | integer           | Flash Width           |
-| flashHeight       | integer           | Flash Height          |
-| flashVariables    | object            | Flash Variables       |
+| id                | string            | Element ID            |
+| swf               | string            | Flash Source          |
+| atts              | object            | Flash Attributes      |
+| pars              | object            | Flash Params          |
+| flvs              | object            | Flash Variables       |
+| polite            | string            | Polite Image Source   |
 
 ```javascript
-flashObject.embed(elementId, flashSource, flashWidth, flashHeight, flashVariables);
+flashObject.embed(id, swf, atts, pars, flvs, polite);
 ```
 
 ##### Example
 
 ```javascript
 if (flashObject.detected()) {
-    flashObject.embed('myElementId', 'myFlashFile.swf', 930, 180, {clickTAG: 'http://domain.com'});
+    flashObject.embed('myElementId', 'myFlashFile.swf', {width: 930, height: 180}, {}, {clickTAG: 'http://domain.com'}, 'myPoliteImage.png');
 } else {
     // Flash Plugin Missing!
 }
@@ -56,29 +57,51 @@ if (flashObject.detected()) {
 
 | Argument Name     | Argument Type     | Argument Description  |
 | :---------------: | :---------------: | :-------------------: |
-| elementId         | string            | Appending Element ID  |
-| imageSource       | string            | Image Source URL      |
-| imageWidth        | integer           | Image Width           |
-| imageHeight       | integer           | Image Height          |
-| linkHref          | string            | Hypertext Link URL    |
-| linkTarget        | string            | Hypertext Link Target |
+| domObj            | object OR string  | Element ID OR Object  |
+| src               | string            | Image Source          |
+| width             | integer           | Image Width           |
+| height            | integer           | Image Height          |
+| click             | string            | Link Source           |
 
 ```javascript
-flashObject.image(elementId, imageSource, imageWidth, imageHeight, linkHref, linkTarget);
+flashObject.image(domObj, src, width, height, click));
 ```
 
 ##### Example
 ```javascript
-flashObject.image('myElementId', 'myImageFile.png', 930, 180, 'http://domain.com', '_blank');
+flashObject.image('myElementId', 'myImageFile.png', 930, 180, 'http://domain.com');
+```
+OR
+```javascript
+flashObject.image(domObj, 'myImageFile.png', 930, 180, 'http://domain.com');
+```
+
+## Flash Plugin Debugging
+
+##### Method
+
+| Argument Name     | Argument Type     | Argument Description  |
+| :---------------: | :---------------: | :-------------------: |
+| n/a               | boolean           | Activate Debugging    |
+
+```javascript
+flashObject.debug;
+```
+
+##### Example
+
+```javascript
+flashObject.debug = !0;
 ```
 
 ## Complete Example
 
 ```javascript
+flashObject.debug = !0;
 if (flashObject.detected()) {
-    flashObject.embed('myElementId', 'myFlashFile.swf', 930, 180, {clickTAG: 'http://domain.com'});
+    flashObject.embed('myElementId', 'myFlashFile.swf', {width: 930, height: 180}, {}, {clickTAG: 'http://domain.com'}, 'myPoliteImage.png');
 } else {
-    flashObject.image('myElementId', 'myImageFile.png', 930, 180, 'http://domain.com', '_blank');
+    flashObject.image('myElementId', 'myImageFile.png', 930, 180, 'http://domain.com');
 }
 ```
 
