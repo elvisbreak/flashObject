@@ -62,7 +62,9 @@ if (flashObject.detect()) {
 
 ## History
 
-n/a
+* __1.0.2__ : Adding support for polite loading
+* __1.0.1__ : Adding support for alterntive image
+* __1.0.0__ : Initial build
 
 ## Dependencies
 
