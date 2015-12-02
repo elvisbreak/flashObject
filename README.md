@@ -1,108 +1,75 @@
 # flashObject
 
-Lightweight flash/image embed solution!
+A lightweight flash embed solution with support for flash detection and polite loading
 
-## Flash Plugin Detection
+## Installation
 
-| Argument Name     | Argument Type     | Argument Description  |
-| ----------------- | ----------------- | --------------------- |
-| n/a               | n/a               | n/a                   |
+Choose the *one* of the following that works best for you:
 
-##### Method
-```javascript
-flashObject.detected();
+- Include flashobject.min.js into HTML
+    ```html
+<script type="text/javascript" src="flashobject.min.js"></script>
 ```
 
-##### Example
+- Embed flashobject.min.js into JavaScript
 
+## Usage
+
+Browser plugin detection
 ```javascript
-if (flashObject.detected()) {
-    // Flash Plugin Detected!
+flashObject.detect();
+```
+
+Basic flash object embedding
+```javascript
+flashObject.embed('elementId', 'file.swf', {width: 930, height: 180});
+```
+
+Basic alternative image embedding 
+```javascript
+flashObject.image('elementId', 'file.png', 930, 180, 'http://');
+```
+
+Advanced flash object embedding
+```javascript
+// Flash Attributes
+var atts = {
+    width: 930, 
+    height: 180
+}
+// Flash Params
+var pars = {
+    custom1: 'value'
+}
+// Flash Variables
+var flvs = {
+    custom1: 'value'
+}
+// Polite Loading
+var pol = 'file.png';
+// Embed Flash Object
+flashObject.embed('elementId', 'file.swf', atts, pars, flvs, pol);
+```
+
+Recommended workflow
+```javascript
+if (flashObject.detect()) {
+    flashObject.embed('elementId', 'file.swf', {width: 930, height: 180});
 } else {
-    // Flash Plugin Missing!
+    flashObject.image('elementId', 'file.png', 930, 180, 'http://');
 }
 ```
 
-## Flash Embedding
+## History
 
-| Argument Name     | Argument Type     | Argument Description  |
-| ----------------- | ----------------- | --------------------- |
-| id                | string            | Element ID            |
-| swf               | string            | Flash Source          |
-| atts              | object            | Flash Attributes      |
-| pars              | object            | Flash Params          |
-| flvs              | object            | Flash Variables       |
-| polite            | string            | Polite Image Source   |
+n/a
 
-##### Method
-```javascript
-flashObject.embed(id, swf, atts, pars, flvs, polite);
-```
+## Dependencies
 
-##### Example
-
-```javascript
-if (flashObject.detected()) {
-    flashObject.embed('myElementId', 'myFlashFile.swf', {width: 930, height: 180}, {}, {clickTAG: 'http://domain.com'}, 'myPoliteImage.png');
-} else {
-    // Flash Plugin Missing!
-}
-```
-
-## Image Embedding
-
-| Argument Name     | Argument Type     | Argument Description  |
-| ----------------- | ----------------- | --------------------- |
-| domObj            | object OR string  | Element ID OR Object  |
-| src               | string            | Image Source          |
-| width             | integer           | Image Width           |
-| height            | integer           | Image Height          |
-| click             | string            | Link Source           |
-
-##### Method
-```javascript
-flashObject.image(domObj, src, width, height, click));
-```
-
-##### Example
-```javascript
-flashObject.image('myElementId', 'myImageFile.png', 930, 180, 'http://domain.com');
-```
-OR
-```javascript
-flashObject.image(domObj, 'myImageFile.png', 930, 180, 'http://domain.com');
-```
-
-## Flash Plugin Debugging
-
-| Argument Name     | Argument Type     | Argument Description  |
-| ----------------- | ----------------- | --------------------- |
-| n/a               | boolean           | Activate Debugging    |
-
-##### Method
-```javascript
-flashObject.debug;
-```
-
-##### Example
-```javascript
-flashObject.debug = !0;
-```
-
-## Complete Example
-```javascript
-flashObject.debug = !0;
-if (flashObject.detected()) {
-    flashObject.embed('myElementId', 'myFlashFile.swf', {width: 930, height: 180}, {}, {clickTAG: 'http://domain.com'}, 'myPoliteImage.png');
-} else {
-    flashObject.image('myElementId', 'myImageFile.png', 930, 180, 'http://domain.com');
-}
-```
-
-## Requirements
-No known dependencies known so far. Found one? Let me know!
+None
 
 ## License
+
 Copyright (c) 2015 Fredrik Borggren
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
