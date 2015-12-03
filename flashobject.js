@@ -17,7 +17,7 @@ window.flashObject = window.flashObject || (function() {
 
     fixIE = function(arg) {
         var div = document.createElement("div");
-            div.innerHTML = arg.toLowerCase().replace(/div/g, 'object');
+            div.innerHTML = arg.replace(/div/g, 'object');
         return div.firstChild;
     },
 
@@ -111,6 +111,7 @@ window.flashObject = window.flashObject || (function() {
         try {
 
             var el = document.getElementById(id),
+                pol = document.getElementById(id.replace('main', 'polite')),
                 obj = document.createElement(isIE ? 'div' : 'object'),
                 emb = document.createElement('embed');
             
@@ -126,7 +127,10 @@ window.flashObject = window.flashObject || (function() {
             // Params
             pars = pars || {};
             pars.movie = swf;
+            pars.width = atts.width;
+            pars.height = atts.height;
             pars.wmode = 'opaque';
+            pars.menu = 'false';
             pars.allowscriptaccess = 'always';
 
             // Flashvars
@@ -150,10 +154,12 @@ window.flashObject = window.flashObject || (function() {
             }
             
             if (polite) {
-                image(el, polite, atts.width, atts.height, flvs.clickTAG || '');
+                el.appendChild(obj);
+                el.style.visibility = 'hidden';
+                image(pol, polite, atts.width, atts.height, flvs.clickTAG || '');
                 setEvent(window, 'load', function() {
-                    el.innerHTML = '';
-                    el.appendChild(obj);
+                    pol.style.display = 'none';
+                    el.style.visibility = 'visible';
                 });
             } else {
                 el.appendChild(obj);
