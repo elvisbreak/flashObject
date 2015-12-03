@@ -17,7 +17,7 @@ window.flashObject = window.flashObject || (function() {
 
     fixIE = function(arg) {
         var div = document.createElement("div");
-            div.innerHTML = arg.replace(/div/g, 'object');
+            div.innerHTML = arg.replace(/div|DIV/g, 'object');
         return div.firstChild;
     },
 
@@ -120,9 +120,9 @@ window.flashObject = window.flashObject || (function() {
             atts.data = swf;
             atts.src = swf;
             atts.type = 'application/x-shockwave-flash';
-            atts.pluginspage = 'http://www.adobe.com/go/getflashplayer';
-            atts.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
-            atts.codebase = 'http://fpdownload.macromedia.com/get/shockwave/cabs/flash/swflash.cab#version=7,0,0,0';
+            //atts.pluginspage = 'http://www.adobe.com/go/getflashplayer';
+            //atts.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
+            //atts.codebase = 'http://fpdownload.macromedia.com/get/shockwave/cabs/flash/swflash.cab#version=7,0,0,0';
 
             // Params
             pars = pars || {};
