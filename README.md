@@ -17,12 +17,12 @@ Choose the *one* of the following that works best for you:
 
 Browser plugin detection
 ```javascript
-flashObject.detect();
+flashObject.enabled();
 ```
 
 File type detection
 ```javascript
-flashObject.flash('file.swf');
+flashObject.extension('file.swf');
 ```
 
 Basic flash object embedding

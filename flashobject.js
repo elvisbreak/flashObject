@@ -6,89 +6,155 @@ window.parent.flashObject = window.parent.flashObject || (function() {
         _flvs = {},
         debug = !1,
 
-    isFlash = function(arg) {
-        return 'swf' === arg.substr(arg.lastIndexOf('.') + 1);
+    /**
+     * Has Flash Extension
+     *
+     * @param {string} str Filename
+     * @return {boolean}
+     */
+
+    hasFlashExtension = function(str) {
+        return 'swf' === str.substr(str.lastIndexOf('.') + 1);
     },
 
-    isEmpty = function(domObj) {
-        for (var key in domObj) {
-            if (domObj.hasOwnProperty(key)) {
+    /**
+     * Has Flash Variables
+     *
+     * @param {object} obj Flash Variables
+     * @return {boolean}
+     */
+
+    hasFlashVariables = function(obj) {
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
                 return false;
             }
         }
         return true;
     },
 
-    fixIE = function(arg) {
+    /**
+     * Convert To Internet Explorer
+     *
+     * @param {string} str Outer HTML
+     * @return {object}
+     */
+
+    convertToIE = function(str) {
         var div = document.createElement("div");
-            div.innerHTML = arg.replace(/div|DIV/g, 'object');
+            div.innerHTML = str.replace(/div|DIV/g, 'object');
         return div.firstChild;
     },
 
-    merge = function(obj1, obj2) {
+    /**
+     * Merge Objects
+     *
+     * @param {object} obj1 First Object
+     * @param {object} obj2 Second Object
+     */
+
+    mergeObjects = function(obj1, obj2) {
         for (var key in obj1) {
             obj2[key] = obj1[key];
         }
     },
 
-    setEvent = function(domObj, type, fn) {
-        if (domObj.addEventListener) {
-            domObj.addEventListener(type, fn, false);
-        } else if (domObj.attachEvent)  {
-            domObj.attachEvent('on' + type, fn);
+    /**
+     * Add Event Listener
+     *
+     * @param {object} obj HTML Object
+     * @param {string} type Event Type
+     * @param {object} fn Callback
+     */
+
+    addEventListener = function(obj, type, fn) {
+        if (obj.addEventListener) {
+            obj.addEventListener(type, fn, false);
+        } else if (obj.attachEvent)  {
+            obj.attachEvent('on' + type, fn);
         }
     },
 
-    // Attributes
-    setAttributes = function(domObj, attsObj) {
-        if (attsObj) {
-            for (var attObj in attsObj) {
-                domObj.setAttribute(attObj, attsObj[attObj]);
+    /**
+     * Set Attributes
+     *
+     * @param {object} obj HTML Object
+     * @param {object} atts Attributes
+     */
+
+    setAttributes = function(obj, atts) {
+        if (atts) {
+            for (var att in atts) {
+                obj.setAttribute(att, atts[att]);
             }
         } else {
             for (var _att in _atts) {
-                if (domObj.tagName === 'OBJECT') {
-                    !/type|pluginspage|src/i.test(_att) && domObj.setAttribute(_att, _atts[_att]);
+                if (obj.tagName === 'OBJECT') {
+                    !/type|pluginspage|src/i.test(_att) && obj.setAttribute(_att, _atts[_att]);
                 } else {
-                    !/classid|codebase|data/i.test(_att) && domObj.setAttribute(_att, _atts[_att]);
+                    !/classid|codebase|data/i.test(_att) && obj.setAttribute(_att, _atts[_att]);
                 }
             }
         }
     },
 
-    // Params
-    setParams = function(domObj) {
+    /**
+     * Set Params
+     *
+     * @param {object} obj HTML Object
+     */
+
+    setParams = function(obj) {
         for (var _par in _pars) {
             var par = document.createElement("param");
                 par.setAttribute('name', _par);
                 par.setAttribute('value', _pars[_par]);
-            domObj.appendChild(par);
+            obj.appendChild(par);
         }
     },
 
-    // Flashvars
-    setFlashvars = function(domObj, forEmbed) {
-        if (!isEmpty(_flvs)) {
-            if (forEmbed) {
-                var str = '';
-                for (var _flv in _flvs) {
-                    str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
-                }
-                domObj.setAttribute('flashvars', str);
-            } else {
-                var par = document.createElement("param"), str = '';
-                    par.setAttribute('name', 'flashvars');
-                for (var _flv in _flvs) {
-                    str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
-                    domObj.appendChild(par);
-                }
-                par.setAttribute('value', str);
-                domObj.appendChild(par);
+    /**
+     * Set Object Flash Variables
+     *
+     * @param {object} obj HTML Object
+     */
+
+    setObjectFlashVariables = function(obj) {
+        if (!hasFlashVariables(_flvs)) {
+            var par = document.createElement("param"), str = '';
+                par.setAttribute('name', 'flashvars');
+            for (var _flv in _flvs) {
+                str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
+                obj.appendChild(par);
             }
+            par.setAttribute('value', str);
+            obj.appendChild(par);
         }
     },
 
-    detect = function() {
+    /**
+     * Set Embed Flash Variables
+     *
+     * @param {object} obj HTML Object
+     */
+
+    setEmbedFlashVariables = function(obj) {
+        if (!hasFlashVariables(_flvs)) {
+            var str = '';
+            for (var _flv in _flvs) {
+                str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
+            }
+            obj.setAttribute('flashvars', str);
+        }
+    },
+
+    /**
+     * Has Flash Plugin
+     *
+     * @return {boolean}
+     */
+
+    hasFlashPlugin = function() {
         try {
             if (navigator.plugins && navigator.plugins["Shockwave Flash"]) {
                 return !0;
@@ -100,21 +166,44 @@ window.parent.flashObject = window.parent.flashObject || (function() {
         }
     },
 
-    image = function(domObj, src, width, height, click) {
+    /**
+     * Embed Hypertext Image
+     *
+     * @param {object} obj HTML Object
+     * @param {string} src Image Source Path
+     * @param {number} width Image Width
+     * @param {number} height Image Height
+     * @param {string} click Image Click Through URL
+     * @return {object} Image Object
+     */
+
+    embedHypertextImage = function(obj, src, width, height, click) {
         try {
             var link = document.createElement('a'), img = document.createElement('img');
-            domObj = 'object' === typeof domObj ? domObj : document.getElementById(domObj);
+            obj = 'object' === typeof obj ? obj : document.getElementById(obj);
             setAttributes(link, {href: click, target: '_blank', style: 'display:block;font-size:0'});
             setAttributes(img, {src: src, width: width, height: height, border: 0});
             link.appendChild(img);
-            domObj.appendChild(link);
+            obj.appendChild(link);
             return img;
         } catch (e) {
             debug && console.log(e);
         }
     },
 
-    embed = function(id, swf, atts, pars, flvs, polite) {
+    /**
+     * Embed Flash Object
+     *
+     * @param {string} id HTML Object ID
+     * @param {string} swf Flash Source Path
+     * @param {object} atts Flash Attributes
+     * @param {object} pars Flash Parameters
+     * @param {object} flvs Flash Variables
+     * @param {object} polite Polite Image Source Path
+     * @return {object} Flash Object
+     */
+
+    embedFlashObject = function(id, swf, atts, pars, flvs, polite) {
 
         try {
 
@@ -145,18 +234,18 @@ window.parent.flashObject = window.parent.flashObject || (function() {
             flvs = flvs || {};
 
             // Merge Objects
-            merge(atts, _atts);
-            merge(pars, _pars);
-            merge(flvs, _flvs);
+            mergeObjects(atts, _atts);
+            mergeObjects(pars, _pars);
+            mergeObjects(flvs, _flvs);
 
             setAttributes(obj, !1);
             setParams(obj);
-            setFlashvars(obj, !1);
+            setObjectFlashVariables(obj);
 
             if (isIE) {
-                obj = fixIE(obj.outerHTML);
+                obj = convertToIE(obj.outerHTML);
             } else {
-                setFlashvars(emb, !0);
+                setEmbedFlashVariables(emb);
                 setAttributes(emb, !1);
                 obj.appendChild(emb);
             }
@@ -164,8 +253,8 @@ window.parent.flashObject = window.parent.flashObject || (function() {
             if (polite) {
                 el.appendChild(obj);
                 el.style.visibility = 'hidden';
-                image(pol, polite, atts.width, atts.height, flvs.clickTAG || '');
-                setEvent(window, 'load', function() {
+                embedHypertextImage(pol, polite, atts.width, atts.height, flvs.clickTAG || '');
+                addEventListener(window, 'load', function() {
                     pol.style.display = 'none';
                     el.style.visibility = 'visible';
                 });
@@ -180,13 +269,18 @@ window.parent.flashObject = window.parent.flashObject || (function() {
         }
     };
 
-    // Exports
+    /**
+     * Exports
+     *
+     * @return {object}
+     */
+
     return {
         debug: debug,
-        detect: detect,
-        image: image,
-        embed: embed,
-        flash: isFlash
+        embed: embedFlashObject,
+        image: embedHypertextImage,
+        enabled: hasFlashPlugin,
+        extension: hasFlashExtension
     }
 
 })();
