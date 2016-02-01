@@ -1,10 +1,14 @@
-window.flashObject = window.flashObject || (function() {
+window.parent.flashObject = window.parent.flashObject || (function() {
 
-    var isIE = /msie|trident|edge/g.test(navigator.userAgent.toLowerCase());
-    var _atts = {},
+    var isIE = /msie|trident|edge/g.test(navigator.userAgent.toLowerCase()),
+        _atts = {},
         _pars = {},
         _flvs = {},
         debug = !1,
+
+    isFlash = function(arg) {
+        return 'swf' === arg.substr(arg.lastIndexOf('.') + 1);
+    },
 
     isEmpty = function(domObj) {
         for (var key in domObj) {
@@ -29,7 +33,7 @@ window.flashObject = window.flashObject || (function() {
 
     setEvent = function(domObj, type, fn) {
         if (domObj.addEventListener) {
-            domObj.addEventListener(type, fn, false); 
+            domObj.addEventListener(type, fn, false);
         } else if (domObj.attachEvent)  {
             domObj.attachEvent('on' + type, fn);
         }
@@ -97,15 +101,19 @@ window.flashObject = window.flashObject || (function() {
     },
 
     image = function(domObj, src, width, height, click) {
-        domObj = 'object' === typeof domObj ? domObj : document.getElementById(domObj);
-        var link = document.createElement('a'),
-            img = document.createElement('img');
-        setAttributes(link, {href: click, target: '_blank', style: 'display:block;font-size:0'});
-        setAttributes(img, {src: src, width: width, height: height, border: 0});
-        link.appendChild(img);
-        domObj.appendChild(link);
+        try {
+            var link = document.createElement('a'), img = document.createElement('img');
+            domObj = 'object' === typeof domObj ? domObj : document.getElementById(domObj);
+            setAttributes(link, {href: click, target: '_blank', style: 'display:block;font-size:0'});
+            setAttributes(img, {src: src, width: width, height: height, border: 0});
+            link.appendChild(img);
+            domObj.appendChild(link);
+            return img;
+        } catch (e) {
+            debug && console.log(e);
+        }
     },
-    
+
     embed = function(id, swf, atts, pars, flvs, polite) {
 
         try {
@@ -114,7 +122,7 @@ window.flashObject = window.flashObject || (function() {
                 pol = document.getElementById(id.replace('main', 'polite')),
                 obj = document.createElement(isIE ? 'div' : 'object'),
                 emb = document.createElement('embed');
-            
+
             // Attributes
             atts = atts || {};
             atts.data = swf;
@@ -152,7 +160,7 @@ window.flashObject = window.flashObject || (function() {
                 setAttributes(emb, !1);
                 obj.appendChild(emb);
             }
-            
+
             if (polite) {
                 el.appendChild(obj);
                 el.style.visibility = 'hidden';
@@ -165,6 +173,8 @@ window.flashObject = window.flashObject || (function() {
                 el.appendChild(obj);
             }
 
+            return obj;
+
         } catch (e) {
             debug && console.log(e);
         }
@@ -175,7 +185,8 @@ window.flashObject = window.flashObject || (function() {
         debug: debug,
         detect: detect,
         image: image,
-        embed: embed
+        embed: embed,
+        flash: isFlash
     }
 
 })();

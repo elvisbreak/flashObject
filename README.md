@@ -20,12 +20,17 @@ Browser plugin detection
 flashObject.detect();
 ```
 
+File type detection
+```javascript
+flashObject.flash('file.swf');
+```
+
 Basic flash object embedding
 ```javascript
 flashObject.embed('elementId', 'file.swf', {width: 930, height: 180});
 ```
 
-Basic alternative image embedding 
+Basic alternative image embedding
 ```javascript
 flashObject.image('elementId', 'file.png', 930, 180, 'http://');
 ```
@@ -34,7 +39,7 @@ Advanced flash object embedding
 ```javascript
 // Flash Attributes
 var atts = {
-    width: 930, 
+    width: 930,
     height: 180
 }
 // Flash Params
