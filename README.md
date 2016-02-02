@@ -1,69 +1,70 @@
 # flashObject
 
-A lightweight flash embed solution with support for flash detection and polite loading
+Lightweight JS library for embedding Adobe Flash and/or image adverts
 
 ## Installation
 
-Choose the *one* of the following that works best for you:
-
-- Include flashobject.min.js into HTML
-    ```html
-<script type="text/javascript" src="flashobject.min.js"></script>
+```html
+<script src="flashobject.min.js"></script>
 ```
-
-- Embed flashobject.min.js into JavaScript
 
 ## Usage
 
+### Getting Started
+
+Create HTML element for embedding
+
+```html
+<div id="foo"></div>
+```
+
+### Embedding
+
+Flash
+
+```javascript
+flashObject.embed('foo', 'file.swf', {width: 930, height: 180});
+```
+
+Flash with custom configuration
+
+```javascript
+
+var att = {width: 930, height: 180},
+    par = {},
+    flv = {};
+
+flashObject.embed('foo', 'file.swf', att, par, flv);
+```
+
+Image
+
+```javascript
+flashObject.image('foo', 'file.png', 930, 180);
+```
+
+Image with hypertext link
+
+```javascript
+flashObject.image('foo', 'file.png', 930, 180, 'http://');
+```
+
+### Utilities
+
 Browser plugin detection
 ```javascript
-flashObject.enabled();
-```
-
-File type detection
-```javascript
-flashObject.extension('file.swf');
-```
-
-Basic flash object embedding
-```javascript
-flashObject.embed('elementId', 'file.swf', {width: 930, height: 180});
-```
-
-Basic alternative image embedding
-```javascript
-flashObject.image('elementId', 'file.png', 930, 180, 'http://');
-```
-
-Advanced flash object embedding
-```javascript
-// Flash Attributes
-var atts = {
-    width: 930,
-    height: 180
-}
-// Flash Params
-var pars = {
-    custom1: 'value'
-}
-// Flash Variables
-var flvs = {
-    custom1: 'value'
-}
-// Polite Loading
-var pol = 'file.png';
-// Embed Flash Object
-flashObject.embed('elementId', 'file.swf', atts, pars, flvs, pol);
-```
-
-Recommended workflow
-```javascript
 if (flashObject.enabled()) {
-    flashObject.embed('elementId', 'file.swf', {width: 930, height: 180});
-} else {
-    flashObject.image('elementId', 'file.png', 930, 180, 'http://');
+    // supported
 }
 ```
+
+File extension detection
+```javascript
+if (flashObject.extension('/path/to/file.swf')) {
+    // flash extension
+}
+```
+
 
 ## History
 
