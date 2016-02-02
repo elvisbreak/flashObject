@@ -1,9 +1,9 @@
 window.parent.flashObject = window.parent.flashObject || (function() {
 
-    var isIE = /msie|trident|edge/g.test(navigator.userAgent.toLowerCase()),
-        _atts = {},
-        _pars = {},
-        _flvs = {},
+    var internetExplorer = /msie|trident|edge/g.test(navigator.userAgent.toLowerCase()),
+        flashAttributes = {},
+        flashParameters = {},
+        flashVariables = {},
         debug = !1,
 
     /**
@@ -40,10 +40,10 @@ window.parent.flashObject = window.parent.flashObject || (function() {
      * @return {object}
      */
 
-    convertToIE = function(str) {
-        var div = document.createElement("div");
-            div.innerHTML = str.replace(/div|DIV/g, 'object');
-        return div.firstChild;
+    convertToInternetExplorer = function(str) {
+        var htmlElement = document.createElement("div");
+            htmlElement.innerHTML = str.replace(/div|DIV/g, 'object');
+        return htmlElement.firstChild;
     },
 
     /**
@@ -79,20 +79,20 @@ window.parent.flashObject = window.parent.flashObject || (function() {
      * Set Attributes
      *
      * @param {object} obj HTML Object
-     * @param {object} atts Attributes
+     * @param {object} attributes Attributes
      */
 
-    setAttributes = function(obj, atts) {
-        if (atts) {
-            for (var att in atts) {
-                obj.setAttribute(att, atts[att]);
+    setAttributes = function(obj, attributes) {
+        if (attributes) {
+            for (var attribute in attributes) {
+                obj.setAttribute(attribute, attributes[attribute]);
             }
         } else {
-            for (var _att in _atts) {
+            for (var attribute in flashAttributes) {
                 if (obj.tagName === 'OBJECT') {
-                    !/type|pluginspage|src/i.test(_att) && obj.setAttribute(_att, _atts[_att]);
+                    !/type|pluginspage|src/i.test(attribute) && obj.setAttribute(attribute, flashAttributes[attribute]);
                 } else {
-                    !/classid|codebase|data/i.test(_att) && obj.setAttribute(_att, _atts[_att]);
+                    !/classid|codebase|data/i.test(attribute) && obj.setAttribute(attribute, flashAttributes[attribute]);
                 }
             }
         }
@@ -105,11 +105,11 @@ window.parent.flashObject = window.parent.flashObject || (function() {
      */
 
     setParams = function(obj) {
-        for (var _par in _pars) {
-            var par = document.createElement("param");
-                par.setAttribute('name', _par);
-                par.setAttribute('value', _pars[_par]);
-            obj.appendChild(par);
+        for (var parameter in flashParameters) {
+            var htmlElement = document.createElement("param");
+                htmlElement.setAttribute('name', parameter);
+                htmlElement.setAttribute('value', flashParameters[parameter]);
+            obj.appendChild(htmlElement);
         }
     },
 
@@ -120,15 +120,15 @@ window.parent.flashObject = window.parent.flashObject || (function() {
      */
 
     setObjectFlashVariables = function(obj) {
-        if (!hasFlashVariables(_flvs)) {
-            var par = document.createElement("param"), str = '';
-                par.setAttribute('name', 'flashvars');
-            for (var _flv in _flvs) {
-                str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
-                obj.appendChild(par);
+        if (!hasFlashVariables(flashVariables)) {
+            var htmlElement = document.createElement("param"), str = '';
+                htmlElement.setAttribute('name', 'flashvars');
+            for (var _flv in flashVariables) {
+                str = (str !== '' ? str + "&amp;" : '') + [_flv, flashVariables[_flv]].join("=");
+                obj.appendChild(htmlElement);
             }
-            par.setAttribute('value', str);
-            obj.appendChild(par);
+            htmlElement.setAttribute('value', str);
+            obj.appendChild(htmlElement);
         }
     },
 
@@ -139,10 +139,10 @@ window.parent.flashObject = window.parent.flashObject || (function() {
      */
 
     setEmbedFlashVariables = function(obj) {
-        if (!hasFlashVariables(_flvs)) {
+        if (!hasFlashVariables(flashVariables)) {
             var str = '';
-            for (var _flv in _flvs) {
-                str = (str !== '' ? str + "&amp;" : '') + [_flv, _flvs[_flv]].join("=");
+            for (var _flv in flashVariables) {
+                str = (str !== '' ? str + "&amp;" : '') + [_flv, flashVariables[_flv]].join("=");
             }
             obj.setAttribute('flashvars', str);
         }
@@ -179,13 +179,14 @@ window.parent.flashObject = window.parent.flashObject || (function() {
 
     embedHypertextImage = function(obj, src, width, height, click) {
         try {
-            var link = document.createElement('a'), img = document.createElement('img');
+            var hypertextElement = document.createElement('a'),
+                imageElement = document.createElement('img');
             obj = 'object' === typeof obj ? obj : document.getElementById(obj);
-            setAttributes(link, {href: click, target: '_blank', style: 'display:block;font-size:0'});
-            setAttributes(img, {src: src, width: width, height: height, border: 0});
-            link.appendChild(img);
-            obj.appendChild(link);
-            return img;
+            setAttributes(hypertextElement, {href: click, target: '_blank', style: 'display:block;font-size:0'});
+            setAttributes(imageElement, {src: src, width: width, height: height, border: 0});
+            hypertextElement.appendChild(imageElement);
+            obj.appendChild(hypertextElement);
+            return imageElement;
         } catch (e) {
             debug && console.log(e);
         }
@@ -196,73 +197,73 @@ window.parent.flashObject = window.parent.flashObject || (function() {
      *
      * @param {string} id HTML Object ID
      * @param {string} swf Flash Source Path
-     * @param {object} atts Flash Attributes
-     * @param {object} pars Flash Parameters
-     * @param {object} flvs Flash Variables
-     * @param {object} polite Polite Image Source Path
+     * @param {object} attributes Flash Attributes
+     * @param {object} parameters Flash Parameters
+     * @param {object} flashvars Flash Variables
+     * @param {object} politeImage Polite Image Source Path
      * @return {object} Flash Object
      */
 
-    embedFlashObject = function(id, swf, atts, pars, flvs, polite) {
+    embedFlashObject = function(id, swf, attributes, parameters, flashvars, politeImage) {
 
         try {
 
-            var el = document.getElementById(id),
-                pol = document.getElementById(id.replace('main', 'polite')),
-                obj = document.createElement(isIE ? 'div' : 'object'),
-                emb = document.createElement('embed');
+            var mainElement = document.getElementById(id),
+                politeElement = document.getElementById(id.replace('main', 'polite')),
+                objectElement = document.createElement(internetExplorer ? 'div' : 'object'),
+                embedElement = document.createElement('embed');
 
             // Attributes
-            atts = atts || {};
-            atts.data = swf;
-            atts.src = swf;
-            atts.type = 'application/x-shockwave-flash';
-            //atts.pluginspage = 'http://www.adobe.com/go/getflashplayer';
-            //atts.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
-            //atts.codebase = 'http://fpdownload.macromedia.com/get/shockwave/cabs/flash/swflash.cab#version=7,0,0,0';
+            attributes = attributes || {};
+            attributes.data = swf;
+            attributes.src = swf;
+            attributes.type = 'application/x-shockwave-flash';
+            //attributes.pluginspage = 'http://www.adobe.com/go/getflashplayer';
+            //attributes.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
+            //attributes.codebase = 'http://fpdownload.macromedia.com/get/shockwave/cabs/flash/swflash.cab#version=7,0,0,0';
 
             // Params
-            pars = pars || {};
-            pars.movie = swf;
-            pars.width = atts.width;
-            pars.height = atts.height;
-            pars.wmode = 'opaque';
-            pars.menu = 'false';
-            pars.allowscriptaccess = 'always';
+            parameters = parameters || {};
+            parameters.movie = swf;
+            parameters.width = attributes.width;
+            parameters.height = attributes.height;
+            parameters.wmode = 'opaque';
+            parameters.menu = 'false';
+            parameters.allowscriptaccess = 'always';
 
             // Flashvars
-            flvs = flvs || {};
+            flashvars = flashvars || {};
 
             // Merge Objects
-            mergeObjects(atts, _atts);
-            mergeObjects(pars, _pars);
-            mergeObjects(flvs, _flvs);
+            mergeObjects(attributes, flashAttributes);
+            mergeObjects(parameters, flashParameters);
+            mergeObjects(flashvars, flashVariables);
 
-            setAttributes(obj, !1);
-            setParams(obj);
-            setObjectFlashVariables(obj);
+            setAttributes(objectElement);
+            setParams(objectElement);
+            setObjectFlashVariables(objectElement);
 
-            if (isIE) {
-                obj = convertToIE(obj.outerHTML);
+            if (internetExplorer) {
+                objectElement = convertToInternetExplorer(objectElement.outerHTML);
             } else {
-                setEmbedFlashVariables(emb);
-                setAttributes(emb, !1);
-                obj.appendChild(emb);
+                setEmbedFlashVariables(embedElement);
+                setAttributes(embedElement);
+                objectElement.appendChild(embedElement);
             }
 
-            if (polite) {
-                el.appendChild(obj);
-                el.style.visibility = 'hidden';
-                embedHypertextImage(pol, polite, atts.width, atts.height, flvs.clickTAG || '');
+            if (politeImage) {
+                mainElement.appendChild(objectElement);
+                mainElement.style.visibility = 'hidden';
+                embedHypertextImage(politeElement, politeImage, attributes.width, attributes.height, flashvars.clickTAG || '');
                 addEventListener(window, 'load', function() {
-                    pol.style.display = 'none';
-                    el.style.visibility = 'visible';
+                    politeElement.style.display = 'none';
+                    mainElement.style.visibility = 'visible';
                 });
             } else {
-                el.appendChild(obj);
+                mainElement.appendChild(objectElement);
             }
 
-            return obj;
+            return objectElement;
 
         } catch (e) {
             debug && console.log(e);
