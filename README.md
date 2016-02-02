@@ -58,7 +58,7 @@ flashObject.embed('elementId', 'file.swf', atts, pars, flvs, pol);
 
 Recommended workflow
 ```javascript
-if (flashObject.detect()) {
+if (flashObject.enabled()) {
     flashObject.embed('elementId', 'file.swf', {width: 930, height: 180});
 } else {
     flashObject.image('elementId', 'file.png', 930, 180, 'http://');
