@@ -8,9 +8,7 @@ Lightweight JS library for embedding Adobe Flash and/or image adverts
 <script src="flashobject.min.js"></script>
 ```
 
-## Usage
-
-### Getting Started
+## Getting Started
 
 Create HTML element for embedding
 
@@ -18,7 +16,7 @@ Create HTML element for embedding
 <div id="foo"></div>
 ```
 
-### Embedding
+## Usage
 
 Flash
 
@@ -49,7 +47,7 @@ Image with hypertext link
 flashObject.image('foo', 'file.png', 930, 180, 'http://');
 ```
 
-### Utilities
+## Utilities
 
 Browser plugin detection
 ```javascript
