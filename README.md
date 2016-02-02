@@ -67,9 +67,10 @@ if (flashObject.enabled()) {
 
 ## History
 
-* __1.0.2__ : Adding support for polite loading
-* __1.0.1__ : Adding support for alterntive image
-* __1.0.0__ : Initial build
+* __1.3__ : Adding support for extension control
+* __1.2__ : Adding support for polite loading
+* __1.1__ : Adding support for alterntive image
+* __1.0__ : Initial build
 
 ## Dependencies
 
