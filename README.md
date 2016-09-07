@@ -2,10 +2,18 @@
 
 Lightweight JS library for embedding Adobe Flash and/or image adverts
 
-## Installation
+## Setup
+
+Include the (compressed or uncompressed) JavaScript module within in your `<script>` markup:
 
 ```html
-<script src="flashobject.min.js"></script>
+<script type="text/javascript">
+
+    // include loader module here
+    
+    // include your code here
+
+</script>
 ```
 
 ## Getting Started
